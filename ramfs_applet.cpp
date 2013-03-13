@@ -8,10 +8,16 @@
 
 
 AppIndicator *indicator;
+GtkWidget *window;
+	GtkWidget *indicator_menu;
+	GtkWidget *ramfs_item;
+	GtkWidget *freemem_item;
+	GtkWidget *quit_item;
 
 
 gboolean read_statistics(gpointer data);
 long get_free_RAM(int);
+void set_indicating_menu_items(long,long);
 
 
 ///////////////////////////
@@ -20,19 +26,9 @@ long get_free_RAM(int);
 
 int main (int argc, char **argv)
 {
-	
-	GtkWidget *indicator_menu;
-	GtkWidget *quit_item;
-	GtkWidget *window;
-
+		
 	gtk_init (&argc, &argv);
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL); 
-
-	indicator_menu = gtk_menu_new();
-	quit_item = gtk_menu_item_new_with_label ("Quit");
-
-	//add menu item to menu
-	gtk_menu_append(GTK_MENU(indicator_menu),quit_item);
 
 	//connect destroy signal on quit
 	g_signal_connect (G_OBJECT (window),
@@ -40,22 +36,15 @@ int main (int argc, char **argv)
 	                  G_CALLBACK (gtk_main_quit),
 	                  NULL);
 
-	g_signal_connect (G_OBJECT (quit_item),
-	                  "activate",
-	                  G_CALLBACK (gtk_main_quit),
-	                  NULL);
-
-	gtk_widget_show (quit_item);
-
 	//Indicator creation
 	indicator = app_indicator_new ("ramfs-applet",
 	                               "",
 	                               APP_INDICATOR_CATEGORY_SYSTEM_SERVICES);
 
 	app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
-
-	app_indicator_set_menu (indicator, GTK_MENU (indicator_menu));
-
+	
+	set_indicating_menu_items(0,0);
+	
 	g_timeout_add_seconds(1,read_statistics,NULL);
 
 	gtk_main ();
@@ -85,12 +74,7 @@ void set_indicating_menu_items(long ramfs, long mem)
 	sprintf(ramfs_text,"ramfs size: %ld MB",ramfs/1024);
 
 	char mem_text[100]; 
-	sprintf(mem_text,"free RAM: %ld MB", mem/1024);
-
-	GtkWidget *indicator_menu;
-	GtkWidget *ramfs_item;
-	GtkWidget *freemem_item;
-	GtkWidget *quit_item;
+	sprintf(mem_text,"free RAM: %ld MB", mem/1024);	
 
 	indicator_menu = gtk_menu_new();
 	ramfs_item = gtk_menu_item_new_with_label ((const char*)ramfs_text);
@@ -100,8 +84,7 @@ void set_indicating_menu_items(long ramfs, long mem)
 	//add menu item to menu
 	gtk_menu_append(GTK_MENU(indicator_menu),ramfs_item);
 	gtk_menu_append(GTK_MENU(indicator_menu),freemem_item);
-	gtk_menu_append(GTK_MENU(indicator_menu),quit_item);
-	
+	gtk_menu_append(GTK_MENU(indicator_menu),quit_item);	
 
 	g_signal_connect (G_OBJECT (quit_item),
 	                  "activate",
