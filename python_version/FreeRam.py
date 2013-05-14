@@ -39,3 +39,4 @@ if __name__ == "__main__":
     print("Ramfs size: " + str(get_ramfs_size()))
     print("Free RAM: " + str(get_free_RAM()))
     print("Total RAM: " + str(total_RAM) + "\t" + str(total_RAM//1024) + "Mb")
+    

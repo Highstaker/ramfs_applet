@@ -65,3 +65,4 @@ if __name__ == "__main__":
     #GLib.timeout_add_seconds(1,set_indicating_menus(ind))
 
     Gtk.main()
+    
